@@ -1,7 +1,30 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#root {
+    height: 100%;
+}
+
 .App {
     display: flex;
     flex-direction: row;
+    height: 100%;
 }
+
+.Main {
+    height: 100%;
+    z-index: 1;
+}
+
+.Map {
+    /*width: 500px;*/
+    /*height: 500px;*/
+    flex-grow: 1;
+    height: 100%;
+}
+
 
 button {
     border: solid 1px gray;

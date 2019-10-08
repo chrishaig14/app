@@ -198,8 +198,8 @@ class App extends React.Component {
                         </div>)}
                     </div>
                 </div>
-                <div>
-                    <div id={"viewDiv"} style={{width: "400px", height: "400px"}}></div>
+                <div className={"Map"}>
+                    <div id={"viewDiv"} style={{width: "100%", height: "100%"}}></div>
                     <div id={"coordinates"}></div>
                 </div>
             </div>
