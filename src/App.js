@@ -4,6 +4,11 @@ import "./App.css";
 import {loadModules} from "esri-loader";
 
 class App extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {places: []};
+    }
+
     componentDidMount() {
 
 // first, we use Dojo's loader to require the map class
@@ -55,6 +60,11 @@ class App extends React.Component {
                     featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
                         .then(res => {
                             let l = map.findLayerById("points");
+                            this.setState(state => {
+                                state.places.push({...newFeature});
+                                // return {places: this.state.places.push()};
+                                return state;
+                            });
                             console.log(l);
                         })
                         .catch(err => console.log("ERROR: ", err));
@@ -69,6 +79,35 @@ class App extends React.Component {
     render() {
         return (
             <div className="App">
+                <form className={"Form"} onSubmit={(e) => {
+                    e.preventDefault();
+                }}>
+                    <div className={"Form-item"}>
+                        <label>Dirección</label>
+                        <input type={"text"}/>
+                    </div>
+                    <div className={"Form-item"}>
+                        <label>Nombre</label>
+                        <input type={"text"}/>
+                    </div>
+                    <div className={"Form-item"}>
+                        <label>Categoría</label>
+                        <select>
+                            <option value={"Comercial"}>Comercial</option>
+                            <option value={"Residencial"}>Residencial</option>
+                            <option value={"Mixta"}>Mixta</option>
+                        </select>
+                    </div>
+                    <div className={"Form-item"}>
+                        <label>Coordenadas</label>
+                        <input type={"text"}/>
+                    </div>
+                    <button type={"submit"}>Agregar</button>
+                </form>
+                <div>
+                    {this.state.places.map(p => <div
+                        className={"Place-item"}>{p.geometry.x + "," + p.geometry.y}</div>)}
+                </div>
                 <div id={"viewDiv"} style={{width: "400px", height: "400px"}}></div>
                 <div id={"coordinates"}></div>
             </div>
