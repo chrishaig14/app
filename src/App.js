@@ -116,6 +116,7 @@ class App extends React.Component {
                                     this.highlight.remove();
                                 }
                                 this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
+                                this.view.goTo(p);
                             });
 
                         }}>Go to place
