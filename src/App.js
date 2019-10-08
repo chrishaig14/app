@@ -54,22 +54,35 @@ class App extends React.Component {
                 });
                 this.map.layers.add(this.featureLayer);
                 this.view.on("click", (e) => {
-                    // console.log("e.x: ", e.x, " e.y: ", e.y);
-                    let pos = this.view.toMap({x: e.x, y: e.y});
-                    pos = {latitude: pos.latitude, longitude: pos.longitude};
-                    document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
-                    var newFeature = {
-                        geometry: {type: "point", x: pos.longitude, y: pos.latitude},
-                        attributes: {ObjectID: 2, name: "HELLO"}
-                    };
-                    this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
-                        .then(res => {
-                            this.setState(state => {
-                                state.places.push(newFeature);
-                                return state;
+                    this.view.hitTest(e).then(r => {
+                        console.log("RESULTS HIT: ", r);
+                        if (r.results.length > 0) {
+                            let feature = r.results[0].graphic;
+                            this.view.whenLayerView(this.featureLayer).then((layerView) => {
+                                if (this.highlight) {
+                                    this.highlight.remove();
+                                }
+                                this.highlight = layerView.highlight(feature.attributes.ObjectID);
+                                // this.view.goTo(p);
                             });
-                        })
-                        .catch(err => console.log("ERROR: ", err));
+                        } else {
+                            let pos = this.view.toMap({x: e.x, y: e.y});
+                            pos = {latitude: pos.latitude, longitude: pos.longitude};
+                            document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
+                            var newFeature = {
+                                geometry: {type: "point", x: pos.longitude, y: pos.latitude},
+                                attributes: {ObjectID: 2, name: "HELLO"}
+                            };
+                            this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
+                                .then(res => {
+                                    this.setState(state => {
+                                        state.places.push(newFeature);
+                                        return state;
+                                    });
+                                })
+                                .catch(err => console.log("ERROR: ", err));
+                        }
+                    });
                 });
             })
             .catch(err => {
