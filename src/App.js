@@ -112,26 +112,30 @@ class App extends React.Component {
     render() {
         return (
             <div className="App">
-                <Form/>
-                <div>
-                    {this.state.places.map(p => <div
-                        className={"Place-item"}>{p.geometry.x + "," + p.geometry.y}
-                        <button onClick={() => {
-                            let editFeature = p;
-                            this.view.whenLayerView(this.featureLayer).then((layerView) => {
-                                if (this.highlight) {
-                                    this.highlight.remove();
-                                }
-                                this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
-                                this.view.goTo(p);
-                            });
+                <div className={"Main"}>
+                    <Form/>
+                    <div className={"PlaceList"}>
+                        {this.state.places.map(p => <div
+                            className={"Place-item"}>{p.geometry.x + "," + p.geometry.y}
+                            <button onClick={() => {
+                                let editFeature = p;
+                                this.view.whenLayerView(this.featureLayer).then((layerView) => {
+                                    if (this.highlight) {
+                                        this.highlight.remove();
+                                    }
+                                    this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
+                                    this.view.goTo(p);
+                                });
 
-                        }}>Go to place
-                        </button>
-                    </div>)}
+                            }}>Go to place
+                            </button>
+                        </div>)}
+                    </div>
                 </div>
-                <div id={"viewDiv"} style={{width: "400px", height: "400px"}}></div>
-                <div id={"coordinates"}></div>
+                <div>
+                    <div id={"viewDiv"} style={{width: "400px", height: "400px"}}></div>
+                    <div id={"coordinates"}></div>
+                </div>
             </div>
         );
     }
