@@ -2,6 +2,7 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import {loadModules} from "esri-loader";
+import Form from "./Form";
 
 class App extends React.Component {
     constructor(props) {
@@ -111,31 +112,7 @@ class App extends React.Component {
     render() {
         return (
             <div className="App">
-                <form className={"Form"} onSubmit={(e) => {
-                    e.preventDefault();
-                }}>
-                    <div className={"Form-item"}>
-                        <label>Dirección</label>
-                        <input type={"text"}/>
-                    </div>
-                    <div className={"Form-item"}>
-                        <label>Nombre</label>
-                        <input type={"text"}/>
-                    </div>
-                    <div className={"Form-item"}>
-                        <label>Categoría</label>
-                        <select>
-                            <option value={"Comercial"}>Comercial</option>
-                            <option value={"Residencial"}>Residencial</option>
-                            <option value={"Mixta"}>Mixta</option>
-                        </select>
-                    </div>
-                    <div className={"Form-item"}>
-                        <label>Coordenadas</label>
-                        <input type={"text"}/>
-                    </div>
-                    <button type={"submit"}>Agregar</button>
-                </form>
+                <Form/>
                 <div>
                     {this.state.places.map(p => <div
                         className={"Place-item"}>{p.geometry.x + "," + p.geometry.y}
