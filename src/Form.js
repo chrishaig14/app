@@ -24,7 +24,12 @@ class Form extends React.Component {
                 </div>
                 <div className={"Form-item"}>
                     <label>Coordenadas</label>
-                    <input type={"text"}/>
+                    {this.props.coordinates ? <input type={"text"}
+                                                     value={
+                                                         this.props.coordinates.latitude.toFixed(3) + "," +
+                                                         this.props.coordinates.longitude.toFixed(3)}
+                        /> :
+                        <input type={"text"}/>}
                 </div>
                 <button type={"submit"}>Agregar</button>
             </form>

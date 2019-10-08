@@ -7,7 +7,7 @@ import Form from "./Form";
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {places: [], selectedPlace: null};
+        this.state = {places: [], selectedPlace: null, newPlaceCoordinates: null};
         this.map = null;
         this.view = null;
         this.featureLayer = null;
@@ -70,21 +70,22 @@ class App extends React.Component {
                                 // this.view.goTo(p);
                             });
                         } else {
-                            let pos = this.view.toMap({x: e.x, y: e.y});
-                            pos = {latitude: pos.latitude, longitude: pos.longitude};
-                            document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
-                            var newFeature = {
-                                geometry: {type: "point", x: pos.longitude, y: pos.latitude},
-                                attributes: {ObjectID: 2, name: "HELLO"}
-                            };
-                            this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
-                                .then(res => {
-                                    this.setState(state => {
-                                        state.places.push(newFeature);
-                                        return state;
-                                    });
-                                })
-                                .catch(err => console.log("ERROR: ", err));
+                            this.setState({newPlaceCoordinates: this.view.toMap({x: e.x, y: e.y})});
+                            // let pos = this.view.toMap({x: e.x, y: e.y});
+                            // pos = {latitude: pos.latitude, longitude: pos.longitude};
+                            // document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
+                            // var newFeature = {
+                            //     geometry: {type: "point", x: pos.longitude, y: pos.latitude},
+                            //     attributes: {ObjectID: 2, name: "HELLO"}
+                            // };
+                            // this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
+                            //     .then(res => {
+                            //         this.setState(state => {
+                            //             state.places.push(newFeature);
+                            //             return state;
+                            //         });
+                            //     })
+                            //     .catch(err => console.log("ERROR: ", err));
                         }
                     });
                     // let pos = this.view.toMap({x: e.x, y: e.y});
@@ -114,7 +115,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <div className={"Main"}>
-                    <Form/>
+                    <Form coordinates={this.state.newPlaceCoordinates}/>
                     <div className={"PlaceList"}>
                         {this.state.places.map(p => <div
                             className={["PlaceItem", this.state.selectedPlace === p.attributes.ObjectID ? "Selected" : null].join(" ")}>
