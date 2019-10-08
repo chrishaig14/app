@@ -7,6 +7,10 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {places: []};
+        this.map = null;
+        this.view = null;
+        this.featureLayer = null;
+        this.highlight = null;
     }
 
     componentDidMount() {
@@ -18,20 +22,21 @@ class App extends React.Component {
             .then(([Map, MapView, FeatureLayer, Graphic]) => {
                 console.log("MAP: ", Map);
 
-                var map = new Map({
+                this.map = new Map({
                     basemap: "streets"
                 });
 
-                var view = new MapView({
+                this.view = new MapView({
+                    highlightOptions: {color: "#ff0000"},
                     container: "viewDiv",
-                    map: map,
+                    map: this.map,
                     center: [-118.71511, 34.09042], // longitude, latitude
                     zoom: 11
                 });
 
                 var features = [{geometry: {type: "point", x: -20, y: 80}, attributes: {ObjectID: 1, name: "HELLO"}}];
                 var graphics = features.map(feature => Graphic.fromJSON(feature));
-                var featureLayer = new FeatureLayer({
+                this.featureLayer = new FeatureLayer({
                     id: "points",
                     fields: [
                         {
@@ -47,25 +52,22 @@ class App extends React.Component {
                     geometryType: "point",
                     source: graphics
                 });
-                map.layers.add(featureLayer);
-                view.on("click", (e) => {
+                this.map.layers.add(this.featureLayer);
+                this.view.on("click", (e) => {
                     // console.log("e.x: ", e.x, " e.y: ", e.y);
-                    let pos = view.toMap({x: e.x, y: e.y});
+                    let pos = this.view.toMap({x: e.x, y: e.y});
                     pos = {latitude: pos.latitude, longitude: pos.longitude};
                     document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
                     var newFeature = {
                         geometry: {type: "point", x: pos.longitude, y: pos.latitude},
                         attributes: {ObjectID: 2, name: "HELLO"}
                     };
-                    featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
+                    this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
                         .then(res => {
-                            let l = map.findLayerById("points");
                             this.setState(state => {
-                                state.places.push({...newFeature});
-                                // return {places: this.state.places.push()};
+                                state.places.push(newFeature);
                                 return state;
                             });
-                            console.log(l);
                         })
                         .catch(err => console.log("ERROR: ", err));
                 });
@@ -106,7 +108,19 @@ class App extends React.Component {
                 </form>
                 <div>
                     {this.state.places.map(p => <div
-                        className={"Place-item"}>{p.geometry.x + "," + p.geometry.y}</div>)}
+                        className={"Place-item"}>{p.geometry.x + "," + p.geometry.y}
+                        <button onClick={() => {
+                            let editFeature = p;
+                            this.view.whenLayerView(this.featureLayer).then((layerView) => {
+                                if (this.highlight) {
+                                    this.highlight.remove();
+                                }
+                                this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
+                            });
+
+                        }}>Go to place
+                        </button>
+                    </div>)}
                 </div>
                 <div id={"viewDiv"} style={{width: "400px", height: "400px"}}></div>
                 <div id={"coordinates"}></div>
