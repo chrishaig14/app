@@ -3,8 +3,43 @@
     flex-direction: row;
 }
 
+button {
+    border: solid 1px gray;
+    border-radius: 0.5em;
+    padding: 0.5em;
+}
+
 .Form {
+    padding: 0.5em;
+}
+
+.Form-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+}
+
+.Form-item input {
 }
 
 .PlaceList {
+    border-top: solid 1px black;
+}
+
+.PlaceItem {
+    display: flex;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+    border-bottom: solid 1px black;
+}
+
+.PlaceItem.Selected {
+    background-color: lightgreen;
+}
+
+
+.GoToButton {
+    background-color: lightskyblue;
+    margin-left: auto;
 }

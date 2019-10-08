@@ -7,7 +7,7 @@ import Form from "./Form";
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {places: []};
+        this.state = {places: [], selectedPlace: null};
         this.map = null;
         this.view = null;
         this.featureLayer = null;
@@ -116,14 +116,17 @@ class App extends React.Component {
                     <Form/>
                     <div className={"PlaceList"}>
                         {this.state.places.map(p => <div
-                            className={"Place-item"}>{p.geometry.x + "," + p.geometry.y}
-                            <button onClick={() => {
+                            className={["PlaceItem", this.state.selectedPlace === p.attributes.ObjectID ? "Selected" : null].join(" ")}>
+                            <span
+                                className={"PlaceCoordinates"}>{p.geometry.x.toFixed(3) + "," + p.geometry.y.toFixed(3)}</span>
+                            <button className={"GoToButton"} onClick={() => {
                                 let editFeature = p;
                                 this.view.whenLayerView(this.featureLayer).then((layerView) => {
                                     if (this.highlight) {
                                         this.highlight.remove();
                                     }
                                     this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
+                                    this.setState({selectedPlace: p.attributes.ObjectID});
                                     this.view.goTo(p);
                                 });
 
