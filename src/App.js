@@ -69,8 +69,6 @@ class App extends React.Component {
                     zoom: 11
                 });
 
-                var features = [{geometry: {type: "point", x: -20, y: 80}, attributes: {ObjectID: 1, name: "HELLO"}}];
-                var graphics = features.map(feature => Graphic.fromJSON(feature));
                 this.featureLayer = new FeatureLayer({
                     id: "points",
                     fields: [
@@ -101,7 +99,7 @@ class App extends React.Component {
                         }],
                     objectIdField: "ObjectID",
                     geometryType: "point",
-                    source: graphics
+                    source: []
                 });
                 let template = {title: "{ObjectId} {name} {category} {address}"};
                 this.featureLayer.popupTemplate = template;
