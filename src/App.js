@@ -52,37 +52,54 @@ class App extends React.Component {
                     geometryType: "point",
                     source: graphics
                 });
+                let template = {title: "{ObjectId}"};
+                this.featureLayer.popupTemplate = template;
                 this.map.layers.add(this.featureLayer);
                 this.view.on("click", (e) => {
-                    this.view.hitTest(e).then(r => {
-                        console.log("RESULTS HIT: ", r);
-                        if (r.results.length > 0) {
-                            let feature = r.results[0].graphic;
-                            this.view.whenLayerView(this.featureLayer).then((layerView) => {
-                                if (this.highlight) {
-                                    this.highlight.remove();
-                                }
-                                this.highlight = layerView.highlight(feature.attributes.ObjectID);
-                                // this.view.goTo(p);
+                    // this.view.hitTest(e).then(r => {
+                    //     console.log("RESULTS HIT: ", r);
+                    //     if (r.results.length > 0) {
+                    //         let feature = r.results[0].graphic;
+                    //         this.view.whenLayerView(this.featureLayer).then((layerView) => {
+                    //             if (this.highlight) {
+                    //                 this.highlight.remove();
+                    //             }
+                    //             this.highlight = layerView.highlight(feature.attributes.ObjectID);
+                    //             // this.view.goTo(p);
+                    //         });
+                    //     } else {
+                    //         let pos = this.view.toMap({x: e.x, y: e.y});
+                    //         pos = {latitude: pos.latitude, longitude: pos.longitude};
+                    //         document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
+                    //         var newFeature = {
+                    //             geometry: {type: "point", x: pos.longitude, y: pos.latitude},
+                    //             attributes: {ObjectID: 2, name: "HELLO"}
+                    //         };
+                    //         this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
+                    //             .then(res => {
+                    //                 this.setState(state => {
+                    //                     state.places.push(newFeature);
+                    //                     return state;
+                    //                 });
+                    //             })
+                    //             .catch(err => console.log("ERROR: ", err));
+                    //     }
+                    // });
+                    let pos = this.view.toMap({x: e.x, y: e.y});
+                    pos = {latitude: pos.latitude, longitude: pos.longitude};
+                    document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
+                    var newFeature = {
+                        geometry: {type: "point", x: pos.longitude, y: pos.latitude},
+                        attributes: {ObjectID: 2, name: "HELLO"}
+                    };
+                    this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
+                        .then(res => {
+                            this.setState(state => {
+                                state.places.push(newFeature);
+                                return state;
                             });
-                        } else {
-                            let pos = this.view.toMap({x: e.x, y: e.y});
-                            pos = {latitude: pos.latitude, longitude: pos.longitude};
-                            document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
-                            var newFeature = {
-                                geometry: {type: "point", x: pos.longitude, y: pos.latitude},
-                                attributes: {ObjectID: 2, name: "HELLO"}
-                            };
-                            this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
-                                .then(res => {
-                                    this.setState(state => {
-                                        state.places.push(newFeature);
-                                        return state;
-                                    });
-                                })
-                                .catch(err => console.log("ERROR: ", err));
-                        }
-                    });
+                        })
+                        .catch(err => console.log("ERROR: ", err));
                 });
             })
             .catch(err => {
