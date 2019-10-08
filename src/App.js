@@ -29,7 +29,12 @@ class App extends React.Component {
                 document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
                 var newFeature = {
                     geometry: {type: "point", x: pos.longitude, y: pos.latitude},
-                    attributes: {ObjectID: 2, name: "HELLO"}
+                    attributes: {
+                        ObjectID: this.state.places.length,
+                        name: place.name,
+                        category: place.category,
+                        address: place.address
+                    }
                 };
                 this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
                     .then(res => {
@@ -73,7 +78,23 @@ class App extends React.Component {
                             name: "ObjectID",
                             alias: "ObjectID",
                             type: "oid"
-                        }, {
+                        },
+                        {
+                            name: "name",
+                            alias: "name",
+                            type: "string"
+                        },
+                        {
+                            name: "category",
+                            alias: "category",
+                            type: "oid"
+                        },
+                        {
+                            name: "address",
+                            alias: "address",
+                            type: "string"
+                        },
+                        {
                             name: "type",
                             alias: "Type",
                             type: "string"
@@ -82,7 +103,7 @@ class App extends React.Component {
                     geometryType: "point",
                     source: graphics
                 });
-                let template = {title: "{ObjectId}"};
+                let template = {title: "{ObjectId} {name} {category} {address}"};
                 this.featureLayer.popupTemplate = template;
                 this.map.layers.add(this.featureLayer);
                 this.view.on("click", (e) => {

@@ -4,10 +4,12 @@ function coordsToString(coordinates) {
     return coordinates.latitude + "," + coordinates.longitude;
 }
 
+const categories = ["Comercial", "Residencial", "Mixta"];
+
 class Form extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {address: "", category: 0, name: "", coordinates: this.props.coordinates};
+        this.state = {address: "", category: categories[0], name: "", coordinates: this.props.coordinates};
         this.onTextInputChange = this.onTextInputChange.bind(this);
     }
 
@@ -44,9 +46,7 @@ class Form extends React.Component {
                     <select onChange={e => {
                         this.setState({category: e.target.options[e.target.selectedIndex].value});
                     }}>
-                        <option value={"Comercial"}>Comercial</option>
-                        <option value={"Residencial"}>Residencial</option>
-                        <option value={"Mixta"}>Mixta</option>
+                        {categories.map(c => <option value={c}>{c}</option>)}
                     </select>
                 </div>
                 <div className={"Form-item"}>
