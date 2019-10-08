@@ -34,7 +34,8 @@ class App extends React.Component {
                         ObjectID: this.state.places.length,
                         name: place.name,
                         category: place.category,
-                        address: place.address
+                        address: place.address,
+                        phone: place.phone
                     }
                 };
                 this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
@@ -94,6 +95,11 @@ class App extends React.Component {
                             type: "string"
                         },
                         {
+                            name: "phone",
+                            alias: "phone",
+                            type: "string"
+                        },
+                        {
                             name: "type",
                             alias: "Type",
                             type: "string"
@@ -102,7 +108,7 @@ class App extends React.Component {
                     geometryType: "point",
                     source: []
                 });
-                let template = {title: "{ObjectId} {name} {category} {address}"};
+                let template = {title: "{ObjectId} {name} {category} {address} {phone}"};
                 this.featureLayer.popupTemplate = template;
                 this.map.layers.add(this.featureLayer);
                 this.view.on("click", (e) => {
@@ -171,8 +177,9 @@ class App extends React.Component {
                         {this.state.places.map(p => <div
                             className={["PlaceItem", this.state.selectedPlace === p.attributes.ObjectID ? "Selected" : null].join(" ")}>
                             <div className={"PlaceName"}>{p.attributes.name}</div>
-                            <div className={"PlaceAddress"}>{p.attributes.address}</div>
                             <div className={"PlaceCategory"}>{p.attributes.category}</div>
+                            <div className={"PlaceAddress"}>{p.attributes.address}</div>
+                            <div className={"PlacePhone"}>{p.attributes.phone}</div>
                             <span
                                 className={"PlaceCoordinates"}>{p.geometry.x.toFixed(3) + "," + p.geometry.y.toFixed(3)}</span>
                             <button className={"GoToButton"} onClick={() => {

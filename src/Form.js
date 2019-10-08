@@ -4,12 +4,17 @@ function coordsToString(coordinates) {
     return coordinates.latitude + "," + coordinates.longitude;
 }
 
+function validatePhone(tel) {
+    // some custom validation
+    return true;
+}
+
 const categories = ["Comercial", "Residencial", "Mixta"];
 
 class Form extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {address: "", category: categories[0], name: "", coordinates: this.props.coordinates};
+        this.state = {address: "", category: categories[0], phone: "", name: "", coordinates: this.props.coordinates};
         this.onTextInputChange = this.onTextInputChange.bind(this);
     }
 
@@ -20,6 +25,11 @@ class Form extends React.Component {
     }
 
     onTextInputChange(e, name) {
+        if (name === "phone") {
+            if (!validatePhone(e.target.value)) {
+                return;
+            }
+        }
         let t = {};
         t[name] = e.target.value;
         this.setState(t);
@@ -32,14 +42,19 @@ class Form extends React.Component {
                 this.props.onSubmit(this.state);
             }}>
                 <div className={"Form-item"}>
+                    <label htmlFor={"name"}>Nombre</label>
+                    <input id={"name"} required={true} type={"text"} value={this.state.name}
+                           onChange={(e) => this.onTextInputChange(e, "name")}/>
+                </div>
+                <div className={"Form-item"}>
                     <label htmlFor={"address"}>Dirección</label>
                     <input id={"address"} type={"text"} value={this.state.address}
                            onChange={(e) => this.onTextInputChange(e, "address")}/>
                 </div>
                 <div className={"Form-item"}>
-                    <label htmlFor={"name"}>Nombre</label>
-                    <input id={"name"} required={true} type={"text"} value={this.state.name}
-                           onChange={(e) => this.onTextInputChange(e, "name")}/>
+                    <label htmlFor={"phone"}>Teléfono</label>
+                    <input required={true} id={"phone"} type={"text"} value={this.state.phone}
+                           onChange={(e) => this.onTextInputChange(e, "phone")}/>
                 </div>
                 <div className={"Form-item"}>
                     <label htmlFor={"category"}>Categoría</label>
