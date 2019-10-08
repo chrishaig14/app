@@ -38,7 +38,7 @@ class Form extends React.Component {
                 </div>
                 <div className={"Form-item"}>
                     <label htmlFor={"name"}>Nombre</label>
-                    <input id={"name"} type={"text"} value={this.state.name}
+                    <input id={"name"} required={true} type={"text"} value={this.state.name}
                            onChange={(e) => this.onTextInputChange(e, "name")}/>
                 </div>
                 <div className={"Form-item"}>
@@ -51,7 +51,7 @@ class Form extends React.Component {
                 </div>
                 <div className={"Form-item"}>
                     <label htmlFor={"coordinates"}>Coordenadas</label>
-                    <input id={"coordinates"} type={"text"}
+                    <input id={"coordinates"} required={true} type={"text"}
                            value={this.state.coordinates ? coordsToString(this.state.coordinates) : ""}
                     />
                 </div>
