@@ -12,11 +12,40 @@ class App extends React.Component {
         this.view = null;
         this.featureLayer = null;
         this.highlight = null;
+        this.onFormSubmit = this.onFormSubmit.bind(this);
+    }
+
+    onFormSubmit(data) {
+        this.addNewPlace(data);
+    }
+
+    addNewPlace(place) {
+
+        const options = {css: true};
+
+        loadModules(["esri/Graphic"], options)
+            .then(([Graphic]) => {
+                let pos = place.coordinates;
+                document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
+                var newFeature = {
+                    geometry: {type: "point", x: pos.longitude, y: pos.latitude},
+                    attributes: {ObjectID: 2, name: "HELLO"}
+                };
+                this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
+                    .then(res => {
+                        this.setState(state => {
+                            state.places.push(newFeature);
+                            return state;
+                        });
+                    })
+                    .catch(err => console.log("ERROR: ", err));
+            })
+            .catch(err => {
+                console.error(err);
+            });
     }
 
     componentDidMount() {
-
-// first, we use Dojo's loader to require the map class
         const options = {css: true};
 
         loadModules(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/Graphic"], options)
@@ -115,7 +144,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <div className={"Main"}>
-                    <Form coordinates={this.state.newPlaceCoordinates}/>
+                    <Form onSubmit={this.onFormSubmit} coordinates={this.state.newPlaceCoordinates}/>
                     <div className={"PlaceList"}>
                         {this.state.places.map(p => <div
                             className={["PlaceItem", this.state.selectedPlace === p.attributes.ObjectID ? "Selected" : null].join(" ")}>
