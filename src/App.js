@@ -17,6 +17,7 @@ class App extends React.Component {
 
     onFormSubmit(data) {
         this.addNewPlace(data);
+        this.setState({newPlaceCoordinates: null});
     }
 
     addNewPlace(place) {
@@ -163,10 +164,15 @@ class App extends React.Component {
         return (
             <div className="App">
                 <div className={"Main"}>
-                    <Form onSubmit={this.onFormSubmit} coordinates={this.state.newPlaceCoordinates}/>
+                    {/* Change key to reset form after adding new place*/}
+                    <Form key={this.state.places.length} onSubmit={this.onFormSubmit}
+                          coordinates={this.state.newPlaceCoordinates}/>
                     <div className={"PlaceList"}>
                         {this.state.places.map(p => <div
                             className={["PlaceItem", this.state.selectedPlace === p.attributes.ObjectID ? "Selected" : null].join(" ")}>
+                            <div className={"PlaceName"}>{p.attributes.name}</div>
+                            <div className={"PlaceAddress"}>{p.attributes.address}</div>
+                            <div className={"PlaceCategory"}>{p.attributes.category}</div>
                             <span
                                 className={"PlaceCoordinates"}>{p.geometry.x.toFixed(3) + "," + p.geometry.y.toFixed(3)}</span>
                             <button className={"GoToButton"} onClick={() => {

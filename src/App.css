@@ -9,8 +9,27 @@ button {
     padding: 0.5em;
 }
 
+button:focus {
+    box-shadow: 0 0 0 2px #00afed;
+    border: solid 1px transparent;
+    outline: none;
+}
+
+input {
+    border-radius: 0.5em;
+    padding: 0.5em;
+    border: solid 1px gray;
+}
+
+input:focus {
+    box-shadow: 0 0 0 2px #00afed;
+    border-color: transparent;
+    outline: none;
+}
+
 .Form {
     padding: 0.5em;
+    background-color: #b1b1a4;
 }
 
 .Form-item {
@@ -23,12 +42,22 @@ button {
 .Form-item input {
 }
 
+.Form-submit {
+    background-color: forestgreen;
+    color: white;
+}
+
+.Form-submit:active {
+    background-color: limegreen;
+}
+
 .PlaceList {
     border-top: solid 1px black;
 }
 
 .PlaceItem {
-    display: flex;
+    /*display: flex;*/
+    /*flex-direction: column;*/
     margin-bottom: 0.5em;
     padding: 0.5em;
     border-bottom: solid 1px black;
@@ -36,6 +65,19 @@ button {
 
 .PlaceItem.Selected {
     background-color: lightgreen;
+}
+
+.PlaceName {
+    font-size: 1.2em;
+    color: black;
+}
+
+.PlaceAddress {
+    color: gray;
+}
+
+.PlaceCategory {
+
 }
 
 

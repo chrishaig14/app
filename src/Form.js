@@ -55,7 +55,7 @@ class Form extends React.Component {
                            value={this.state.coordinates ? coordsToString(this.state.coordinates) : ""}
                     />
                 </div>
-                <button type={"submit"}>Agregar</button>
+                <button className={"Form-submit"} type={"submit"}>Agregar</button>
             </form>
         );
     }
