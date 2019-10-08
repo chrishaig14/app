@@ -39,8 +39,25 @@ input:focus {
     margin-bottom: 0.5em;
 }
 
-.Form-item input {
+.Form-item label {
+    margin-right: 1em;
+    width: 100px;
 }
+
+#category {
+    flex-grow: 1;
+    border: solid 1px gray;
+    border-radius: 0.5em;
+    background-color: lightgray;
+    padding: 0.5em;
+}
+
+#category:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #00afed;
+    border-color: transparent;
+}
+
 
 .Form-submit {
     background-color: forestgreen;
@@ -85,3 +102,4 @@ input:focus {
     background-color: lightskyblue;
     margin-left: auto;
 }
+

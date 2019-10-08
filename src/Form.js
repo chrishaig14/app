@@ -32,26 +32,26 @@ class Form extends React.Component {
                 this.props.onSubmit(this.state);
             }}>
                 <div className={"Form-item"}>
-                    <label>Dirección</label>
-                    <input type={"text"} value={this.state.address}
+                    <label htmlFor={"address"}>Dirección</label>
+                    <input id={"address"} type={"text"} value={this.state.address}
                            onChange={(e) => this.onTextInputChange(e, "address")}/>
                 </div>
                 <div className={"Form-item"}>
-                    <label>Nombre</label>
-                    <input type={"text"} value={this.state.name}
+                    <label htmlFor={"name"}>Nombre</label>
+                    <input id={"name"} type={"text"} value={this.state.name}
                            onChange={(e) => this.onTextInputChange(e, "name")}/>
                 </div>
                 <div className={"Form-item"}>
-                    <label>Categoría</label>
-                    <select onChange={e => {
+                    <label htmlFor={"category"}>Categoría</label>
+                    <select id={"category"} onChange={e => {
                         this.setState({category: e.target.options[e.target.selectedIndex].value});
                     }}>
                         {categories.map(c => <option value={c}>{c}</option>)}
                     </select>
                 </div>
                 <div className={"Form-item"}>
-                    <label>Coordenadas</label>
-                    <input type={"text"}
+                    <label htmlFor={"coordinates"}>Coordenadas</label>
+                    <input id={"coordinates"} type={"text"}
                            value={this.state.coordinates ? coordsToString(this.state.coordinates) : ""}
                     />
                 </div>
