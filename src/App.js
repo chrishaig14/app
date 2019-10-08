@@ -108,7 +108,26 @@ class App extends React.Component {
                     geometryType: "point",
                     source: []
                 });
-                let template = {title: "{ObjectId} {name} {category} {address} {phone}"};
+                let template = {
+                    content: [
+                        {
+                            type: "text",
+                            text: "<b>Nombre:</b> {name}"
+                        },
+                        {
+                            type: "text",
+                            text: "<b>Dirección</b>: {address}"
+                        },
+                        {
+                            type: "text",
+                            text: "<b>Teléfono:</b> {phone}"
+                        },
+                        {
+                            type: "text",
+                            text: "<b>Categoría:</b> {category}"
+                        }
+                    ]
+                };
                 this.featureLayer.popupTemplate = template;
                 this.map.layers.add(this.featureLayer);
                 this.view.on("click", (e) => {
