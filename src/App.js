@@ -3,6 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import {loadModules} from "esri-loader";
 import Form from "./Form";
+import fs from "fs";
 
 class App extends React.Component {
     constructor(props) {
@@ -13,6 +14,11 @@ class App extends React.Component {
         this.featureLayer = null;
         this.highlight = null;
         this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.savePlaces = this.savePlaces.bind(this);
+    }
+
+    savePlaces() {
+        console.log(JSON.stringify(this.state.places));
     }
 
     onFormSubmit(data) {
@@ -189,6 +195,11 @@ class App extends React.Component {
         return (
             <div className="App">
                 <div className={"Main"}>
+                    <div className={"SaveLoadJSON"}>
+                        <input type={"file"}/>
+                        <a href={"data:application/json;charset=utf8," + encodeURIComponent(JSON.stringify(this.state.places))}
+                           download={true}>Guardar</a>
+                    </div>
                     {/* Change key to reset form after adding new place*/}
                     <Form key={this.state.places.length} onSubmit={this.onFormSubmit}
                           coordinates={this.state.newPlaceCoordinates}/>
@@ -200,9 +211,10 @@ class App extends React.Component {
                             <div className={"PlaceAddress"}>{p.attributes.address}</div>
                             <div className={"PlacePhone"}>{p.attributes.phone}</div>
                             <span
-                                className={"PlaceCoordinates"}>{p.geometry.x.toFixed(3) + "," + p.geometry.y.toFixed(3)}</span>
+                                className={"PlaceCoordinates"}>{p.geometry.y.toFixed(3) + "," + p.geometry.x.toFixed(3)}</span>
                             <button className={"GoToButton"} onClick={() => {
                                 let editFeature = p;
+                                console.log(p);
                                 this.view.whenLayerView(this.featureLayer).then((layerView) => {
                                     if (this.highlight) {
                                         this.highlight.remove();
