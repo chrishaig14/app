@@ -96,7 +96,7 @@ class App extends React.Component {
                 });
 
                 this.view = new MapView({
-                    highlightOptions: {color: "#ff0000"},
+                    highlightOptions: {color: "#adea9f"},
                     container: "viewDiv",
                     map: this.map,
                     center: [-58.46043872833153, -34.58826055711713], // longitude, latitude
@@ -140,6 +140,20 @@ class App extends React.Component {
                     geometryType: "point",
                     source: []
                 });
+
+                this.featureLayer.renderer = {
+                    type: "simple",
+                    symbol: {
+                        type: "simple-marker",
+                        size: 10,
+                        color: "#555555",
+                        outline: {
+                            width: 0.5,
+                            color: "white"
+                        }
+                    }
+                };
+
                 this.featureLayer.popupTemplate = {
                     content: [
                         {
