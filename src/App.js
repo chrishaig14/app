@@ -72,6 +72,19 @@ class App extends React.Component {
             });
     }
 
+    deletePlace(newFeature) {
+
+        this.featureLayer.applyEdits({deleteFeatures: [newFeature]})
+            .then(res => {
+                this.setState(state => {
+                    state.places = state.places.filter(p => p !== newFeature);
+                    return state;
+                });
+            })
+            .catch(err => console.log("ERROR: ", err));
+    }
+
+
     initializeMap() {
         const options = {css: true};
 
@@ -211,8 +224,8 @@ class App extends React.Component {
                             <div className={"PlacePhone"}>{p.attributes.phone}</div>
                             <span
                                 className={"PlaceCoordinates"}>{p.geometry.y.toFixed(3) + "," + p.geometry.x.toFixed(3)}</span>
-                            <button className={"GoToButton"} onClick={() => this.goToPlace(p)}>Go to place
-                            </button>
+                            <button className={"GoToButton"} onClick={() => this.goToPlace(p)}>Go to place</button>
+                            <button className={"DeleteButton"} onClick={() => this.deletePlace(p)}>Delete</button>
                         </div>)}
                     </div>
                 </div>
