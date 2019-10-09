@@ -1,6 +1,9 @@
 import React from "react";
 
 function coordsToString(coordinates) {
+    if (!coordinates) {
+        return "";
+    }
     return coordinates.latitude + "," + coordinates.longitude;
 }
 
@@ -9,18 +12,44 @@ function validatePhone(tel) {
     return true;
 }
 
+function parseCoordinatesString(str) {
+    let t = str.split(",");
+    if (t.length !== 2) {
+        return null;
+    }
+    if (isNaN(t[0]) || isNaN(t[1])) {
+        return null;
+    }
+
+    let lat = parseFloat(t[0]);
+    let long = parseFloat(t[1]);
+    if (lat <= -90 || lat >= 90 || long <= -180 || long >= 180) {
+        return null;
+    }
+    return {latitude: lat, longitude: long};
+}
+
 const categories = ["Comercial", "Residencial", "Mixta"];
 
 class Form extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {address: "", category: categories[0], phone: "", name: "", coordinates: this.props.coordinates};
+        this.state = {
+            address: "",
+            category: categories[0],
+            phone: "",
+            name: "",
+            coordinatesString: "",
+            invalidCoords: false
+        };
         this.onTextInputChange = this.onTextInputChange.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps !== this.props) {
-            this.setState({coordinates: this.props.coordinates});
+            this.setState({
+                coordinatesString: coordsToString(this.props.coordinates)
+            });
         }
     }
 
@@ -39,7 +68,22 @@ class Form extends React.Component {
         return (
             <form className={"Form"} onSubmit={(e) => {
                 e.preventDefault();
-                this.props.onSubmit(this.state);
+                let coordinates = parseCoordinatesString(this.state.coordinatesString);
+                if (coordinates) {
+                    let data = {
+                        address: this.state.address,
+                        phone: this.state.phone,
+                        category: this.state.category,
+                        name: this.state.name,
+                        coordinates: coordinates
+                    };
+                    this.props.onSubmit(data);
+                    this.setState({invalidCoords: false});
+
+                } else {
+                    this.setState({invalidCoords: true});
+                }
+
             }}>
                 <div className={"Form-item"}>
                     <label htmlFor={"name"}>Nombre</label>
@@ -66,10 +110,16 @@ class Form extends React.Component {
                 </div>
                 <div className={"Form-item"}>
                     <label htmlFor={"coordinates"}>Coordenadas</label>
-                    <input id={"coordinates"} required={true} type={"text"}
-                           value={this.state.coordinates ? coordsToString(this.state.coordinates) : ""}
+                    <input id={"coordinates"}
+                           required={true} type={"text"}
+                           value={this.state.coordinatesString}
+                           onChange={e => {
+                               let s = e.target.value;
+                               this.setState({coordinatesString: s});
+                           }}
                     />
                 </div>
+                {this.state.invalidCoords ? <div style={{color: "red"}}>Coordenadas inválidas</div> : null}
                 <button className={"Form-submit"} type={"submit"}>Agregar</button>
             </form>
         );
