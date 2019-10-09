@@ -61,7 +61,7 @@ class Form extends React.Component {
                     <select id={"category"} onChange={e => {
                         this.setState({category: e.target.options[e.target.selectedIndex].value});
                     }}>
-                        {categories.map(c => <option value={c}>{c}</option>)}
+                        {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
                     </select>
                 </div>
                 <div className={"Form-item"}>
