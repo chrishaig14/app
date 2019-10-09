@@ -13,6 +13,7 @@ function validatePhone(tel) {
 }
 
 function parseCoordinatesString(str) {
+    // Parse coordinates string and return {lat:xxx, long:xxx} if ok. Otherwise, return null
     let t = str.split(",");
     if (t.length !== 2) {
         return null;
@@ -47,6 +48,7 @@ class Form extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps !== this.props) {
+            // Update coordinates value if click on map
             this.setState({
                 coordinatesString: coordsToString(this.props.coordinates)
             });
@@ -69,20 +71,20 @@ class Form extends React.Component {
             <form className={"Form"} onSubmit={(e) => {
                 e.preventDefault();
                 let coordinates = parseCoordinatesString(this.state.coordinatesString);
-                if (coordinates) {
-                    let data = {
-                        address: this.state.address,
-                        phone: this.state.phone,
-                        category: this.state.category,
-                        name: this.state.name,
-                        coordinates: coordinates
-                    };
-                    this.props.onSubmit(data);
-                    this.setState({invalidCoords: false});
-
-                } else {
+                if (!coordinates) {
+                    // Invalid coordinates, cant create new place
                     this.setState({invalidCoords: true});
+                    return;
                 }
+                let data = {
+                    address: this.state.address,
+                    phone: this.state.phone,
+                    category: this.state.category,
+                    name: this.state.name,
+                    coordinates: coordinates
+                };
+                this.props.onSubmit(data);
+                this.setState({invalidCoords: false});
 
             }}>
                 <div className={"Form-item"}>
@@ -92,7 +94,7 @@ class Form extends React.Component {
                 </div>
                 <div className={"Form-item"}>
                     <label htmlFor={"address"}>Dirección</label>
-                    <input id={"address"} type={"text"} value={this.state.address}
+                    <input required={true} id={"address"} type={"text"} value={this.state.address}
                            onChange={(e) => this.onTextInputChange(e, "address")}/>
                 </div>
                 <div className={"Form-item"}>
@@ -109,7 +111,7 @@ class Form extends React.Component {
                     </select>
                 </div>
                 <div className={"Form-item"}>
-                    <label htmlFor={"coordinates"}>Coordenadas</label>
+                    <label htmlFor={"coordinates"}>Lat. , Long.</label>
                     <input id={"coordinates"}
                            required={true} type={"text"}
                            value={this.state.coordinatesString}

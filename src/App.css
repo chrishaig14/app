@@ -21,8 +21,6 @@ html, body {
 }
 
 .Map {
-    /*width: 500px;*/
-    /*height: 500px;*/
     flex-grow: 1;
     height: 100%;
 }

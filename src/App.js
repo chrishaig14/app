@@ -3,6 +3,13 @@ import "./App.css";
 import {loadModules} from "esri-loader";
 import Form from "./Form";
 
+function coordsToString(coordinates) {
+    if (!coordinates) {
+        return "";
+    }
+    return coordinates.latitude + "," + coordinates.longitude;
+}
+
 function makeJsonURI(obj) {
     return "data:application/json;charset=utf8," + encodeURIComponent(JSON.stringify(obj));
 }
@@ -24,6 +31,7 @@ class App extends React.Component {
     }
 
     loadPlaces(e) {
+        // Read places (features) from JSON file
         let fileReader = new FileReader();
         fileReader.onloadend = f => {
             let content = JSON.parse(fileReader.result);
@@ -35,74 +43,77 @@ class App extends React.Component {
     }
 
     onFormSubmit(data) {
-
-        var place = {
+        // Make feature from data and add it
+        let placeFeature = {
             geometry: {type: "point", x: data.coordinates.longitude, y: data.coordinates.latitude},
             attributes: {
                 ObjectID: this.state.places.length,
                 name: data.name,
                 category: data.category,
                 address: data.address,
-                phone: data.phone
+                phone: data.phone,
+                coordinates: coordsToString(data.coordinates)
             }
         };
 
-        this.addNewPlace(place);
+        this.addNewPlace(placeFeature);
 
         this.setState({newPlaceCoordinates: null});
     }
 
-    addNewPlace(newFeature) {
+    addNewPlace(placeFeature) {
+
+        // Add feature to layer
 
         const options = {css: true};
 
         loadModules(["esri/Graphic"], options)
             .then(([Graphic]) => {
-                this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
-                    .then(res => {
+                this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(placeFeature)]})
+                    .then(() => {
                         this.setState(state => {
-                            state.places.push(newFeature);
+                            state.places.push(placeFeature);
                             return state;
                         });
                     })
-                    .catch(err => console.log("ERROR: ", err));
+                    .catch(err => console.log("Error: ", err));
             })
             .catch(err => {
-                console.error(err);
+                console.error("Error: ", err);
             });
     }
 
-    deletePlace(newFeature) {
-
-        this.featureLayer.applyEdits({deleteFeatures: [newFeature]})
-            .then(res => {
+    deletePlace(placeFeature) {
+        // Delete feature from layer
+        this.featureLayer.applyEdits({deleteFeatures: [placeFeature]})
+            .then(() => {
                 this.setState(state => {
-                    state.places = state.places.filter(p => p !== newFeature);
+                    state.places = state.places.filter(p => p !== placeFeature);
                     return state;
                 });
             })
-            .catch(err => console.log("ERROR: ", err));
+            .catch(err => console.log("Error: ", err));
     }
 
 
     initializeMap() {
-        const options = {css: true};
 
-        loadModules(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/Graphic"], options)
-            .then(([Map, MapView, FeatureLayer, Graphic]) => {
+        loadModules(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/Graphic"], {css: true})
+            .then(([Map, MapView, FeatureLayer]) => {
 
                 this.map = new Map({
                     basemap: "streets"
                 });
 
                 this.view = new MapView({
-                    highlightOptions: {color: "#adea9f"},
+                    highlightOptions: {color: "#adea9f"}, // Color for highlighted place
                     container: "viewDiv",
                     map: this.map,
-                    center: [-58.46043872833153, -34.58826055711713], // longitude, latitude
+                    center: [-58.46043872833153, -34.58826055711713], // Buenos Aires
                     zoom: 11
                 });
 
+                // Set features data
                 this.featureLayer = new FeatureLayer({
                     id: "points",
                     fields: [
@@ -132,6 +143,11 @@ class App extends React.Component {
                             type: "string"
                         },
                         {
+                            name: "coordinates",
+                            alias: "coordinates",
+                            type: "string"
+                        },
+                        {
                             name: "type",
                             alias: "Type",
                             type: "string"
@@ -140,7 +156,7 @@ class App extends React.Component {
                     geometryType: "point",
                     source: []
                 });
-
+                // Set marker style
                 this.featureLayer.renderer = {
                     type: "simple",
                     symbol: {
@@ -154,6 +170,7 @@ class App extends React.Component {
                     }
                 };
 
+                // Set popup info
                 this.featureLayer.popupTemplate = {
                     content: [
                         {
@@ -171,14 +188,20 @@ class App extends React.Component {
                         {
                             type: "text",
                             text: "<b>Categoría:</b> {category}"
+                        },
+                        {
+                            type: "text",
+                            text: "<b>Lat., Long.:</b> {coordinates}"
                         }
                     ]
                 };
+
                 this.map.layers.add(this.featureLayer);
+
                 this.view.on("click", (e) => {
                     this.view.hitTest(e).then(r => {
-                        console.log("RESULTS HIT: ", r);
                         if (r.results.length > 0) {
+                            // If click on existing place: highlight on map and on list
                             let feature = r.results[0].graphic;
                             this.view.whenLayerView(this.featureLayer).then((layerView) => {
                                 if (this.highlight) {
@@ -186,28 +209,26 @@ class App extends React.Component {
                                 }
                                 this.highlight = layerView.highlight(feature.attributes.ObjectID);
                                 this.setState({selectedPlace: feature.attributes.ObjectID});
-                                // this.view.goTo(p);
                             });
                         } else {
+                            // If click outside all places: set coordinates for new place
                             this.setState({newPlaceCoordinates: this.view.toMap({x: e.x, y: e.y})});
                         }
                     });
                 });
             })
             .catch(err => {
-                // handle any errors
-                console.error(err);
+                console.error("Error: ", err);
             });
     }
 
     goToPlace(p) {
-        let editFeature = p;
-        console.log(p);
+        // Highlight place and center place in map view
         this.view.whenLayerView(this.featureLayer).then((layerView) => {
             if (this.highlight) {
                 this.highlight.remove();
             }
-            this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
+            this.highlight = layerView.highlight(p.attributes.ObjectID);
             this.setState({selectedPlace: p.attributes.ObjectID});
             this.view.goTo(p);
         });
@@ -238,10 +259,10 @@ class App extends React.Component {
                             className={["PlaceItem", this.state.selectedPlace === p.attributes.ObjectID ? "Selected" : null].join(" ")}>
                             <div className={"PlaceName"}><b>Nombre:</b> {p.attributes.name}</div>
                             <div className={"PlaceContent"}>
-                                <div className={"PlaceCategory"}><b>Categoría:</b> {p.attributes.category}</div>
-                                <div className={"PlaceAddress"}><b>Dirección:</b> {p.attributes.address}</div>
-                                <div className={"PlacePhone"}><b>Teléfono:</b> {p.attributes.phone}</div>
-                                <div className={"PlaceCoordinates"}>
+                                <div><b>Categoría:</b> {p.attributes.category}</div>
+                                <div><b>Dirección:</b> {p.attributes.address}</div>
+                                <div><b>Teléfono:</b> {p.attributes.phone}</div>
+                                <div>
                                     <b>Coordenadas:</b> {p.geometry.y.toFixed(3) + "," + p.geometry.x.toFixed(3)}
                                 </div>
                             </div>
@@ -254,7 +275,6 @@ class App extends React.Component {
                 </div>
                 <div className={"Map"}>
                     <div id={"viewDiv"} style={{width: "100%", height: "100%"}}></div>
-                    <div id={"coordinates"}></div>
                 </div>
             </div>
         );
