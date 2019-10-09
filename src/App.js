@@ -15,6 +15,22 @@ class App extends React.Component {
         this.highlight = null;
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.savePlaces = this.savePlaces.bind(this);
+        this.loadPlaces = this.loadPlaces.bind(this);
+        this.fileInput = React.createRef();
+    }
+
+    loadPlaces(e) {
+        console.log("FILE: ", e.target.value);
+        console.log("LALA: ", this.fileInput.current.files[0]);
+        let fileReader = new FileReader();
+        fileReader.onloadend = f => {
+            let content = JSON.parse(fileReader.result);
+            console.log("file content: ", content);
+            for (let place of content) {
+                this.addNewPlace(place);
+            }
+        };
+        fileReader.readAsText(this.fileInput.current.files[0]);
     }
 
     savePlaces() {
@@ -22,28 +38,29 @@ class App extends React.Component {
     }
 
     onFormSubmit(data) {
-        this.addNewPlace(data);
+
+        var place = {
+            geometry: {type: "point", x: data.coordinates.longitude, y: data.coordinates.latitude},
+            attributes: {
+                ObjectID: this.state.places.length,
+                name: data.name,
+                category: data.category,
+                address: data.address,
+                phone: data.phone
+            }
+        };
+
+        this.addNewPlace(place);
+
         this.setState({newPlaceCoordinates: null});
     }
 
-    addNewPlace(place) {
+    addNewPlace(newFeature) {
 
         const options = {css: true};
 
         loadModules(["esri/Graphic"], options)
             .then(([Graphic]) => {
-                let pos = place.coordinates;
-                document.getElementById("coordinates").innerText = pos.latitude + " , " + pos.longitude;
-                var newFeature = {
-                    geometry: {type: "point", x: pos.longitude, y: pos.latitude},
-                    attributes: {
-                        ObjectID: this.state.places.length,
-                        name: place.name,
-                        category: place.category,
-                        address: place.address,
-                        phone: place.phone
-                    }
-                };
                 this.featureLayer.applyEdits({addFeatures: [Graphic.fromJSON(newFeature)]})
                     .then(res => {
                         this.setState(state => {
@@ -196,7 +213,7 @@ class App extends React.Component {
             <div className="App">
                 <div className={"Main"}>
                     <div className={"SaveLoadJSON"}>
-                        <input type={"file"}/>
+                        <input ref={this.fileInput} type={"file"} onChange={this.loadPlaces}/>
                         <a href={"data:application/json;charset=utf8," + encodeURIComponent(JSON.stringify(this.state.places))}
                            download={true}>Guardar</a>
                     </div>
