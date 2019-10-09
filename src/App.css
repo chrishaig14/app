@@ -28,16 +28,57 @@ html, body {
 }
 
 
-button {
-    border: solid 1px gray;
+button, .Button {
+    border: solid 1px transparent;
+    /*border: none;*/
+    box-shadow: 0 2px 3px 0 gray;
     border-radius: 0.5em;
     padding: 0.5em;
+    color: black;
+    cursor: pointer;
+    font-size: 1em;
 }
 
-button:focus {
+button:focus, .Button:focus {
     box-shadow: 0 0 0 2px #00afed;
     border: solid 1px transparent;
     outline: none;
+}
+
+.Button {
+    background-color: #5fc2e6;
+}
+
+.Button:hover {
+    background-color: #88d1ec;
+}
+
+.Button:active {
+    background-color: #a0daf0;
+}
+
+.SaveLoadJSON {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.5em;
+    /*background-color: #b1b1a4;*/
+    background-color: #e6e9e2;
+}
+
+.Button {
+    display: inline-block;
+    text-decoration: none;
+    color: black;
+}
+
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
 }
 
 input {
@@ -54,7 +95,7 @@ input:focus {
 
 .Form {
     padding: 0.5em;
-    background-color: #b1b1a4;
+    background-color: #F4F7F5;
 }
 
 .Form-item {
@@ -85,29 +126,31 @@ input:focus {
 
 
 .Form-submit {
-    background-color: forestgreen;
-    color: white;
+    background-color: #60B425;
+}
+
+.Form-submit:hover {
+    background-color: #7bd63b;
 }
 
 .Form-submit:active {
-    background-color: limegreen;
+    background-color: #9ee16f;
 }
 
+
 .PlaceList {
-    border-top: solid 1px black;
     overflow-y: scroll;
 }
 
 .PlaceItem {
-    /*display: flex;*/
-    /*flex-direction: column;*/
     margin-bottom: 0.5em;
-    padding: 0.5em;
+    padding: 1em;
     border-bottom: solid 1px black;
+    background-color: #e6e9e2;
 }
 
 .PlaceItem.Selected {
-    background-color: lightgreen;
+    background-color: #adea9f;
 }
 
 .PlaceName {
@@ -115,17 +158,29 @@ input:focus {
     color: black;
 }
 
-.PlaceAddress {
-    color: gray;
-}
-
-.PlaceCategory {
-
-}
-
-
 .GoToButton {
-    background-color: lightskyblue;
+    background-color: #60B425;
     margin-left: auto;
 }
 
+.GoToButton:hover {
+    background-color: #7bd63b;
+}
+
+.DeleteButton {
+    background-color: #F62A0C;
+}
+
+.DeleteButton:hover {
+    background-color: #f7533b;
+}
+
+.DeleteButton:active {
+    background-color: #f9806f;
+}
+
+.Buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+}

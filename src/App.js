@@ -208,8 +208,12 @@ class App extends React.Component {
             <div className="App">
                 <div className={"Main"}>
                     <div className={"SaveLoadJSON"}>
-                        <input ref={this.fileInput} type={"file"} onChange={this.loadPlaces}/>
-                        <a href={makeJsonURI(this.state.places)}
+                        <label className={"Button"}>
+                            Cargar archivo
+                            <input style={{display: "none"}} ref={this.fileInput} type={"file"}
+                                   onChange={this.loadPlaces}/>
+                        </label>
+                        <a class={"Button"} href={makeJsonURI(this.state.places)}
                            download={true}>Guardar</a>
                     </div>
                     {/* Change key to reset form after adding new place*/}
@@ -218,14 +222,19 @@ class App extends React.Component {
                     <div className={"PlaceList"}>
                         {this.state.places.map(p => <div
                             className={["PlaceItem", this.state.selectedPlace === p.attributes.ObjectID ? "Selected" : null].join(" ")}>
-                            <div className={"PlaceName"}>{p.attributes.name}</div>
-                            <div className={"PlaceCategory"}>{p.attributes.category}</div>
-                            <div className={"PlaceAddress"}>{p.attributes.address}</div>
-                            <div className={"PlacePhone"}>{p.attributes.phone}</div>
-                            <span
-                                className={"PlaceCoordinates"}>{p.geometry.y.toFixed(3) + "," + p.geometry.x.toFixed(3)}</span>
-                            <button className={"GoToButton"} onClick={() => this.goToPlace(p)}>Go to place</button>
-                            <button className={"DeleteButton"} onClick={() => this.deletePlace(p)}>Delete</button>
+                            <div className={"PlaceName"}><b>Nombre:</b> {p.attributes.name}</div>
+                            <div className={"PlaceContent"}>
+                                <div className={"PlaceCategory"}><b>Categoría:</b> {p.attributes.category}</div>
+                                <div className={"PlaceAddress"}><b>Dirección:</b> {p.attributes.address}</div>
+                                <div className={"PlacePhone"}><b>Teléfono:</b> {p.attributes.phone}</div>
+                                <div className={"PlaceCoordinates"}>
+                                    <b>Coordenadas:</b> {p.geometry.y.toFixed(3) + "," + p.geometry.x.toFixed(3)}
+                                </div>
+                            </div>
+                            <div className={"Buttons"}>
+                                <button className={"DeleteButton"} onClick={() => this.deletePlace(p)}>Borrar</button>
+                                <button className={"GoToButton"} onClick={() => this.goToPlace(p)}>Ir</button>
+                            </div>
                         </div>)}
                     </div>
                 </div>
