@@ -1,11 +1,15 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import {loadModules} from "esri-loader";
 import Form from "./Form";
-import fs from "fs";
+
+function makeJsonURI(obj) {
+    return "data:application/json;charset=utf8," + encodeURIComponent(JSON.stringify(obj));
+}
 
 class App extends React.Component {
+
+
     constructor(props) {
         super(props);
         this.state = {places: [], selectedPlace: null, newPlaceCoordinates: null};
@@ -14,27 +18,20 @@ class App extends React.Component {
         this.featureLayer = null;
         this.highlight = null;
         this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.savePlaces = this.savePlaces.bind(this);
         this.loadPlaces = this.loadPlaces.bind(this);
+        this.goToPlace = this.goToPlace.bind(this);
         this.fileInput = React.createRef();
     }
 
     loadPlaces(e) {
-        console.log("FILE: ", e.target.value);
-        console.log("LALA: ", this.fileInput.current.files[0]);
         let fileReader = new FileReader();
         fileReader.onloadend = f => {
             let content = JSON.parse(fileReader.result);
-            console.log("file content: ", content);
             for (let place of content) {
                 this.addNewPlace(place);
             }
         };
         fileReader.readAsText(this.fileInput.current.files[0]);
-    }
-
-    savePlaces() {
-        console.log(JSON.stringify(this.state.places));
     }
 
     onFormSubmit(data) {
@@ -75,12 +72,11 @@ class App extends React.Component {
             });
     }
 
-    componentDidMount() {
+    initializeMap() {
         const options = {css: true};
 
         loadModules(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/Graphic"], options)
             .then(([Map, MapView, FeatureLayer, Graphic]) => {
-                console.log("MAP: ", Map);
 
                 this.map = new Map({
                     basemap: "streets"
@@ -90,7 +86,7 @@ class App extends React.Component {
                     highlightOptions: {color: "#ff0000"},
                     container: "viewDiv",
                     map: this.map,
-                    center: [-118.71511, 34.09042], // longitude, latitude
+                    center: [-58.46043872833153, -34.58826055711713], // longitude, latitude
                     zoom: 11
                 });
 
@@ -131,7 +127,7 @@ class App extends React.Component {
                     geometryType: "point",
                     source: []
                 });
-                let template = {
+                this.featureLayer.popupTemplate = {
                     content: [
                         {
                             type: "text",
@@ -151,7 +147,6 @@ class App extends React.Component {
                         }
                     ]
                 };
-                this.featureLayer.popupTemplate = template;
                 this.map.layers.add(this.featureLayer);
                 this.view.on("click", (e) => {
                     this.view.hitTest(e).then(r => {
@@ -178,13 +173,30 @@ class App extends React.Component {
             });
     }
 
+    goToPlace(p) {
+        let editFeature = p;
+        console.log(p);
+        this.view.whenLayerView(this.featureLayer).then((layerView) => {
+            if (this.highlight) {
+                this.highlight.remove();
+            }
+            this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
+            this.setState({selectedPlace: p.attributes.ObjectID});
+            this.view.goTo(p);
+        });
+    }
+
+    componentDidMount() {
+        this.initializeMap();
+    }
+
     render() {
         return (
             <div className="App">
                 <div className={"Main"}>
                     <div className={"SaveLoadJSON"}>
                         <input ref={this.fileInput} type={"file"} onChange={this.loadPlaces}/>
-                        <a href={"data:application/json;charset=utf8," + encodeURIComponent(JSON.stringify(this.state.places))}
+                        <a href={makeJsonURI(this.state.places)}
                            download={true}>Guardar</a>
                     </div>
                     {/* Change key to reset form after adding new place*/}
@@ -199,19 +211,7 @@ class App extends React.Component {
                             <div className={"PlacePhone"}>{p.attributes.phone}</div>
                             <span
                                 className={"PlaceCoordinates"}>{p.geometry.y.toFixed(3) + "," + p.geometry.x.toFixed(3)}</span>
-                            <button className={"GoToButton"} onClick={() => {
-                                let editFeature = p;
-                                console.log(p);
-                                this.view.whenLayerView(this.featureLayer).then((layerView) => {
-                                    if (this.highlight) {
-                                        this.highlight.remove();
-                                    }
-                                    this.highlight = layerView.highlight(editFeature.attributes.ObjectID);
-                                    this.setState({selectedPlace: p.attributes.ObjectID});
-                                    this.view.goTo(p);
-                                });
-
-                            }}>Go to place
+                            <button className={"GoToButton"} onClick={() => this.goToPlace(p)}>Go to place
                             </button>
                         </div>)}
                     </div>
